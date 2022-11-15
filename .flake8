@@ -1,0 +1,31 @@
+# Configuration for flake8 linter
+# See http://flake8.pycqa.org/en/latest/user/configuration.html for examples
+
+[flake8]
+# Ignore some messages
+ignore = D400, # First line of docstring should end with period
+         W503, # line break before binary operator
+         E203,
+         D205, # Blank line required between summary line and description
+	 D100, # Docstrings
+	 E501, # Following black's recommendation; line-length done by B950
+     D104,
+     D202, # no blank line after function docstring
+     E712, # explicit boolean comparisons
+     B008 # for typer
+
+exclude =   .git,
+            .local,
+            .cache,
+            .venv,
+            .vscode,
+            __pycache__,
+            docs,
+            build,
+            dist,
+            notebooks,
+            migrations,
+            analysen
+# Allow maximum code complexity of 10
+max-complexity = 15
+max-line-length = 120
