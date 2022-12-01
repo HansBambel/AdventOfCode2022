@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import numpy as np
 
 
@@ -15,7 +16,7 @@ def calc_calories_and_elf(input_file: str):
     return cal_sum
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("#" * 10 + " Part 1 " + "#" * 10)
     cal_sum_ex = calc_calories_and_elf("input_ex.txt")
     print(cal_sum_ex)

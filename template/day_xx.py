@@ -9,8 +9,8 @@ def part_2(input: str):
     pass
 
 
-if __name__ == '__main__':
-    print("#"*10 + " Part 1 " + "#"*10)
+if __name__ == "__main__":
+    print("#" * 10 + " Part 1 " + "#" * 10)
     data_ex = Path(__file__).with_name("input_ex.txt").read_text()
     result_ex = part_1(data_ex)
     print(result_ex)
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     print(result)
 
     # #### Part 2 ####
-    print("#"*10 + " Part 2 " + "#"*10)
+    print("#" * 10 + " Part 2 " + "#" * 10)
     data_ex = Path(__file__).with_name("input_ex.txt").read_text()
     result = part_2(data_ex)
     print(result)

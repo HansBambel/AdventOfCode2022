@@ -22,10 +22,8 @@ exclude =   .git,
             __pycache__,
             docs,
             build,
-            dist,
-            notebooks,
-            migrations,
-            analysen
+            dist
+
 # Allow maximum code complexity of 10
 max-complexity = 15
 max-line-length = 120
