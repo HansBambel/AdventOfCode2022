@@ -23,13 +23,13 @@ class Node:
         return total
 
 
-def calc_dir_size(node: Node, part_1=True) -> int:
+def calc_dir_size(node: Node) -> int:
     total = 0
     # for size in node.files.values():
     #     total += size
     for dir_node in node.dirs.values():
         dir_size = dir_node.calc_size()
-        if part_1 and dir_size <= 100_000:
+        if dir_size <= 100_000:
             total += dir_size
 
         total += calc_dir_size(dir_node)
@@ -48,6 +48,7 @@ def build_tree(data) -> Node:
                 # go to root
                 current = root
             elif "cd" in line:
+                # enter directory
                 dir_name = re.findall(r"\$ cd (.*)", line)[0]
                 current = current.dirs[dir_name]
             else:
