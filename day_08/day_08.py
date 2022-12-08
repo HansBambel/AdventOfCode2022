@@ -43,6 +43,7 @@ def is_edge_tree(x: int, y: int, input_data) -> bool:
 
 
 def part_2(input_file: str):
+    """This part works, but is ugly AF"""
     data_file = Path(__file__).with_name(input_file).read_text()
     input_data = data_file.split("\n")
     tree_map: Dict[Tuple[int, int], int] = {}
@@ -53,7 +54,6 @@ def part_2(input_file: str):
     highest = 0
     # Now check if trees are visible
     for (y, x), height in tree_map.items():
-        # check until edge if trees before and after are <= as the current one
         trees_vis_left, trees_vis_right, trees_vis_top, trees_vis_bot = 0, 0, 0, 0
         tree_limit_left, tree_limit_right, tree_limit_top, tree_limit_bot = False, False, False, False
         diff = 1
@@ -80,27 +80,6 @@ def part_2(input_file: str):
             if height <= tree_map[y + diff, x]:
                 tree_limit_bot = True
             diff += 1
-        diff = 1
-
-        # while diff < max(len(input_data), len(input_data[0])):
-        #     if not tree_limit_top and height <= tree_map[(max(y - diff, 0), x)]:
-        #         tree_limit_top = True
-        #         if not max(y - diff, 0) == y:
-        #             trees_vis_top += 1
-        #     if not tree_limit_bot and height <= tree_map[min(y + diff, len(input_data) - 1), x]:
-        #         tree_limit_bot = True
-        #         if not min(y + diff, len(input_data) - 1) == y:
-        #             trees_vis_bot += 1
-        #     if not tree_limit_left and height <= tree_map[(y, max(x - diff, 0))]:
-        #         tree_limit_left = True
-        #         if not max(x - diff, 0) == x:
-        #             trees_vis_left += 1
-        #     if not tree_limit_right and height <= tree_map[y, min(len(input_data) - 1, x + diff)]:
-        #         tree_limit_right = True
-        #         if not min(len(input_data) - 1, x + diff):
-        #             trees_vis_right += 1
-        #
-        #     diff += 1
 
         score = trees_vis_left * trees_vis_right * trees_vis_top * trees_vis_bot
         if highest < score:
