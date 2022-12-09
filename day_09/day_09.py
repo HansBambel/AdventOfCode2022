@@ -32,7 +32,10 @@ def part_1(input_file: str):
     return len(set(tail_visited))
 
 
-def part_2(input_file: str):
+def part_2(input_file: str, tail_ind_visited: int = 9):
+    """Simulate a rope with a tail of 9, but only give back the set visited back of the tail in the given index.
+    This allows part_1 to be solved by this function as well by calling part_2(input_file, tail_ind_visited=1)
+    """
     data_file = Path(__file__).with_name(input_file).read_text()
     input_data = data_file.split("\n")
     tail_visited: Set[Tuple[int, int]] = {(0, 0)}
@@ -61,7 +64,7 @@ def part_2(input_file: str):
                     tail[1] = tail[1] + max(min(1, prev_tail[1] - tail[1]), -1)
 
             # print(tails)
-            tail_visited.add(tuple(tails[-1]))
+            tail_visited.add(tuple(tails[tail_ind_visited]))
 
     return len(set(tail_visited))
 
