@@ -13,15 +13,14 @@ def part_1(input_file: str):
         cycles += 1
         x_values.append(x)
         if line.startswith("addx"):
-            _, num = line.split(" ")
-            num = int(num)
             cycles += 1
             x_values.append(x)
+            _, num = line.split(" ")
+            num = int(num)
             x += num
 
     signal_strength = [x * i for i, x in enumerate(x_values) if i == 20 or (i - 20) % 40 == 0]
     print(signal_strength)
-    print(sum(signal_strength))
 
     return sum(signal_strength)
 
@@ -32,16 +31,19 @@ def part_2(input_file: str):
 
     cycles = 1
     x = 1
-    current_line = "#"
+    output = "#"
     for line in input_data:
-        current_line = draw_crt(cycles, x, current_line)
+        output += "#" if x - 1 <= cycles % 40 <= x + 1 else " "
         cycles += 1
         if line.startswith("addx"):
             _, num = line.split(" ")
             num = int(num)
             x += num
-            current_line = draw_crt(cycles, x, current_line)
+            output += "#" if x - 1 <= cycles % 40 <= x + 1 else " "
             cycles += 1
+
+    for i in range(0, len(output) - 1, 40):
+        print(output[i : i + 40])
 
 
 def draw_crt(cycle: int, x: int, current_line: str):
