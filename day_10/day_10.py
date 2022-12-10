@@ -4,25 +4,21 @@ from pathlib import Path
 def part_1(input_file: str):
     data_file = Path(__file__).with_name(input_file).read_text()
     input_data = data_file.split("\n")
-    cycles = 0
+    cycles = 1
     x = 1
 
     sum_cycle_x = []
 
     for line in input_data:
-        if line.startswith("noop"):
-            cycles += 1
-            if check_cycle(cycles):
-                sum_cycle_x.append(cycles * x)
-        else:
+        if check_cycle(cycles):
+            sum_cycle_x.append(cycles * x)
+        cycles += 1
+        if line.startswith("addx"):
             _, num = line.split(" ")
             num = int(num)
-            cycles += 1
             if check_cycle(cycles):
                 sum_cycle_x.append(cycles * x)
             cycles += 1
-            if check_cycle(cycles):
-                sum_cycle_x.append(cycles * x)
             x += num
 
     print(sum_cycle_x)
@@ -37,21 +33,18 @@ def part_2(input_file: str):
     data_file = Path(__file__).with_name(input_file).read_text()
     input_data = data_file.split("\n")
 
-    cycles = 0
+    cycles = 1
     x = 1
-    current_line = ""
+    current_line = "#"
     for line in input_data:
-        if line.startswith("noop"):
-            cycles += 1
-        else:
+        current_line = draw_crt(cycles, x, current_line)
+        cycles += 1
+        if line.startswith("addx"):
             _, num = line.split(" ")
             num = int(num)
-            cycles += 1
+            x += num
             current_line = draw_crt(cycles, x, current_line)
             cycles += 1
-            x += num
-
-        current_line = draw_crt(cycles, x, current_line)
 
 
 def draw_crt(cycle: int, x: int, current_line: str):
@@ -59,8 +52,8 @@ def draw_crt(cycle: int, x: int, current_line: str):
     if x - 1 <= crt_row <= x + 1:
         current_line += "#"
     else:
-        current_line += "."
-    if cycle % 40 == 0:
+        current_line += " "
+    if len(current_line) == 40:
         print(current_line)
         return ""
     return current_line
