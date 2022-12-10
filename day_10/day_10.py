@@ -7,26 +7,23 @@ def part_1(input_file: str):
     cycles = 1
     x = 1
 
-    sum_cycle_x = []
+    x_values = [x]
 
     for line in input_data:
-        if check_cycle(cycles):
-            sum_cycle_x.append(cycles * x)
         cycles += 1
+        x_values.append(x)
         if line.startswith("addx"):
             _, num = line.split(" ")
             num = int(num)
-            if check_cycle(cycles):
-                sum_cycle_x.append(cycles * x)
             cycles += 1
+            x_values.append(x)
             x += num
 
-    print(sum_cycle_x)
-    return sum(sum_cycle_x)
+    signal_strength = [x * i for i, x in enumerate(x_values) if i == 20 or (i - 20) % 40 == 0]
+    print(signal_strength)
+    print(sum(signal_strength))
 
-
-def check_cycle(cycles):
-    return cycles == 20 or (cycles - 20) % 40 == 0
+    return sum(signal_strength)
 
 
 def part_2(input_file: str):
