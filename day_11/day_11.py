@@ -11,17 +11,20 @@ class Monkey:
     inspected_items: int
     true_monkey: int
     false_monkey: int
+    super_mod = 1
 
     def __init__(self):
         self.items = []
         self.inspected_items = 0
 
-    def operation(self, old: int) -> int:
+    def operation(self, old: int, part_2: bool = False) -> int:
         self.inspected_items += 1
         if self.operation_str[1].isnumeric():
             other = int(self.operation_str[1])
         else:
             other = old
+        if part_2:
+            other = other % self.super_mod
         if self.operation_str[0] == "*":
             return old * other
         elif self.operation_str[0] == "+":
@@ -80,12 +83,19 @@ def part_2(input_file: str):
     data_file = Path(__file__).with_name(input_file).read_text()
     monkeys = parse_monkeys(data_file)
 
+    # This part is a math trick that I would not have gotten without looking it up online
+    super_mod = 1
+    for monkey in monkeys:
+        super_mod *= monkey.divisor
+    for monkey in monkeys:
+        monkey.super_mod = super_mod
+
     for _ in tqdm(range(10000)):
         # go through monkeys
         for monkey in monkeys:
             for _ in range(len(monkey.items)):
                 item = monkey.items.pop(0)
-                item = monkey.operation(item)
+                item = monkey.operation(item, part_2=True)
                 # item = item // 3
                 monkey.throw(item, monkeys)
 
