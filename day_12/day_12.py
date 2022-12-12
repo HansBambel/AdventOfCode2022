@@ -3,11 +3,13 @@ from typing import Tuple
 
 import numpy as np
 
+from utils import bfs
+
 neighbors = [(-1, 0), (+1, 0), (0, -1), (0, +1)]
 
 
 def find_way(grid, costs, visited, start_pos: Tuple[int, int], end_pos=None):
-    """Djikstra"""
+    """Dijkstra"""
     pos = start_pos
     # For part 2 we went greedy -> can stop after the first vertex is found
     while (not any(visited[grid == 26])) if end_pos is None else (not visited[end_pos]):
@@ -54,6 +56,8 @@ def part_1(input_file: str):
     visited = np.zeros(shape=grid.shape, dtype=bool)
     # print(grid)
     costs[start_y, start_x] = 0
+
+    # costs, path = bfs(grid, (start_y, start_x))
 
     find_way(grid=grid, costs=costs, visited=visited, start_pos=(start_y, start_x), end_pos=(final_y, final_x))
     # print(costs)
