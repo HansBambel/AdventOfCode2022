@@ -1,13 +1,16 @@
 from pathlib import Path
+from typing import Tuple
 
 import numpy as np
 
 neighbors = [(-1, 0), (+1, 0), (0, -1), (0, +1)]
 
 
-def find_way(grid, costs, visited, start_pos, end_pos):
+def find_way(grid, costs, visited, start_pos: Tuple[int, int], end_pos=None):
+    """Djikstra"""
     pos = start_pos
-    while not visited[end_pos]:
+    # For part 2 we went greedy -> can stop after the first vertex is found
+    while (not any(visited[grid == 26])) if end_pos is None else (not visited[end_pos]):
 
         y, x = pos
         neighbor_coords = [
@@ -49,11 +52,11 @@ def part_1(input_file: str):
 
     costs = np.ones(shape=grid.shape) * np.inf
     visited = np.zeros(shape=grid.shape, dtype=bool)
-    print(grid)
+    # print(grid)
     costs[start_y, start_x] = 0
 
     find_way(grid=grid, costs=costs, visited=visited, start_pos=(start_y, start_x), end_pos=(final_y, final_x))
-    print(costs)
+    # print(costs)
     return costs[final_y, final_x]
 
 
@@ -70,18 +73,16 @@ def part_2(input_file: str):
             if letter == "E":
                 final_y, final_x = y, x
 
-    smallest = 1e9
-    result = np.where(grid == 1)
-    for i in range(len(result[0])):
-        costs = np.ones(shape=grid.shape) * np.inf
-        visited = np.zeros(shape=grid.shape, dtype=bool)
-        y, x = result[0][i], result[1][i]
-        costs[y, x] = 0
-        print("start", y, x)
-        find_way(grid=grid, costs=costs, visited=visited, start_pos=(y, x), end_pos=(final_y, final_x))
-        if costs[final_y, final_x] < smallest:
-            smallest = costs[final_y, final_x]
-    return smallest
+    # inverse the search
+    grid = 27 - grid
+    costs = np.ones(shape=grid.shape) * np.inf
+    visited = np.zeros(shape=grid.shape, dtype=bool)
+    # print(grid)
+    costs[final_y, final_x] = 0
+
+    find_way(grid=grid, costs=costs, visited=visited, start_pos=(final_y, final_x))
+    # print(costs)
+    return min(costs[grid == 26])
 
 
 if __name__ == "__main__":
