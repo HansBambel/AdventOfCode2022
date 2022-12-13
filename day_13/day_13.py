@@ -65,8 +65,7 @@ def part_2(input_file: str):
             # True Left smaller
             # False right smaller
             # None both the same
-            cmp = compare_left_right(sorted_line, line)
-            if cmp is True:
+            if compare_left_right(sorted_line, line):
                 continue
             else:
                 sorted_list.insert(i, line)
