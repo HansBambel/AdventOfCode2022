@@ -2,18 +2,16 @@ import re
 from pathlib import Path
 from typing import Tuple
 
-import numpy as np
-
 from utils import neighbors
 
 
-def add_manhatten_dist(pos: Tuple[int, int], dist: int, impossible_beacons: set):
+def add_manhatten_dist_rec(pos: Tuple[int, int], dist: int, impossible_beacons: set):
     """Add all positions in manhatten distance by adding all neighbors and calling it recursively."""
     if dist < 0:
         return
     impossible_beacons.add(pos)
-    for yn, xn in neighbors:
-        add_manhatten_dist((pos[0] + yn, pos[1] + xn), dist - 1, impossible_beacons)
+    for xn, yn in neighbors:
+        add_manhatten_dist_rec((pos[0] + xn, pos[1] + yn), dist - 1, impossible_beacons)
 
 
 def part_1(input_file: str, row=10):
@@ -29,23 +27,38 @@ def part_1(input_file: str, row=10):
         sensors.append(tuple(sensor))
         beacons.append(tuple(beacon))
 
-    x_pos = [pos[0] for pos in sensors] + [pos[0] for pos in beacons]
-    y_pos = [pos[1] for pos in sensors] + [pos[1] for pos in beacons]
-    min_x, max_x = min(x_pos), max(x_pos)
-    min_y, max_y = min(y_pos), max(y_pos)
-
-    # possible_beacons = np.zeros((max_y-max_y, max_x-min_x), dtype=bool)
-    impossible_beacons = set(sensors)
+    impossible_beacons = set()
     for sen, beac in zip(sensors, beacons):
         # Manhatten distance
         dist = abs(sen[0] - beac[0]) + abs(sen[1] - beac[1])
         # disable all points in possible_beacons from the sensor
-        add_manhatten_dist(sen, dist, impossible_beacons)
+        if row not in range(sen[1] - dist, sen[1] + dist):
+            continue
+
+        """
+        L1 = Manhatten distance = 3
+        Interested row = 2
+        on_row is the number of x values to the left and right of S that are reached
+        on_row is the L1 - abs(Sy - interested row) -> 3 - abs(1-2) = 2
+        --> two to the left and two to the right of S
+            0 ..#####..
+            1 .###S###.
+        ->  2 ..B####..
+            3 ...###...
+            4 ....#....
+            5 .........
+            6 .........
+        """
+        # calc which ones are on the row and add them to the set
+        on_row = dist - abs(sen[1] - row)
+        impossible_beacons.add((sen[0], row))
+        for x in range(sen[0] - on_row, sen[0] + on_row, 1):
+            impossible_beacons.add((x, row))
 
     # Need to remove the found beacons!
     [impossible_beacons.discard(pos) for pos in beacons]
-    result = sum([1 for x, y in impossible_beacons if y == row])
-    return result
+    # Magical + 1 error ?
+    return result + 1
 
 
 def part_2(input_file: str):
