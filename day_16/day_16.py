@@ -43,25 +43,22 @@ def check_open_valves(opened: Tuple, cur_valve, minutes: int) -> int:
     if minutes <= 0:
         return 0
     best_flow = 0
-    if cur_valve not in opened:
+
+    for conn_valve in graph[cur_valve][1]:
         # open the valve and calc the flow resulting from this
         # sort it to have a better caching
         new_opened = tuple(sorted(opened + (cur_valve,)))
         new_flow = graph[cur_valve][0] * (minutes - 1)
-
-        for conn_valve in graph[cur_valve][1]:
+        if cur_valve not in opened:
+            # speed-up: no need to open the valve if it does not have a flow_rate
             if new_flow != 0:
                 # The valve was opened and then we move
                 remaining_flow_open = check_open_valves(new_opened, conn_valve, minutes - 2)
                 best_flow = max(best_flow, new_flow + remaining_flow_open)
-            # The valve has flow=0 and does not need to be opened
-            remaining_flow_move = check_open_valves(opened, conn_valve, minutes - 1)
-            best_flow = max(best_flow, remaining_flow_move)
-    else:
-        for conn_valve in graph[cur_valve][1]:
-            # The valve was already opened, and we just move over it
-            remaining_flow_move = check_open_valves(opened, conn_valve, minutes - 1)
-            best_flow = max(best_flow, remaining_flow_move)
+
+        remaining_flow_move = check_open_valves(opened, conn_valve, minutes - 1)
+        best_flow = max(best_flow, remaining_flow_move)
+
     return best_flow
 
 
@@ -79,7 +76,9 @@ def part_1(input_file: str):
 
     global graph
     graph = valves
-    highest_flow = check_open_valves((), "AA", minutes=30)
+    # Add the valves that have flow rate 0 to be open already
+    opened = {valve for valve, (flow, _) in graph.items() if flow == 0}
+    highest_flow = check_open_valves(tuple(opened), "AA", minutes=30)
 
     return highest_flow
 
