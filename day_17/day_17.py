@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 def part_1(input_file: str):
     movements = Path(__file__).with_name(input_file).read_text()
-
+    correct = Path(__file__).with_name("correct heights").read_text().splitlines()
     chute_line = "......."
     # seven units wide
     chute = [chute_line] * 3
@@ -67,14 +67,25 @@ def part_1(input_file: str):
 
             # check for move down
             free = True
-            for rock_part in rock:
+            for i_r, rock_part in enumerate(rock):
                 # Check for # overlap
                 if cur_y <= 0:
                     free = False
                     break
 
-                line = list(chute[cur_y - 1])
+                """
+                    .......
+                    ....#..
+                    ...###.
+                    ....#..
+                    ..##...
+                """
+
+                line = list(chute[cur_y + i_r - 1])  # line below
                 for i, p in enumerate(line[cur_x : cur_x + len(rock_part)]):
+                    if i_r > 0:
+                        if rock[i_r - 1][i] == "#":
+                            break
                     if rock_part[i] == "#" and p == "#":
                         free = False
                         break
@@ -105,8 +116,14 @@ def part_1(input_file: str):
             chute.append(chute_line)
 
         height = len(chute) - 3
-        # if rock_count in [20, 50, 100, 200]:
-        #     print(rock_count, height)
+        # print(rock_count, height, correct[rock_count])
+        # if rock_count == 20:
+        #     print("################################################################")
+        #     pass
+        # if rock_count ==22:
+        #     break
+        # if rock_count == 50:
+        #     break
 
     return height
 
@@ -123,6 +140,7 @@ if __name__ == "__main__":
     assert result_ex == 3068
 
     result = part_1("input.txt")
+    assert result > 3098, result
     print(result)
 
     # #### Part 2 ####
