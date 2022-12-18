@@ -2,8 +2,6 @@ import re
 from collections import deque
 from pathlib import Path
 
-import numpy as np
-
 
 def part_1(input_file: str):
     data_file = Path(__file__).with_name(input_file).read_text()
@@ -14,10 +12,14 @@ def part_1(input_file: str):
     for drop in droplets:
         # check neighbors
         free_sides += 6
-        for neighbor in [[+1, 0, 0], [-1, 0, 0], [0, +1, 0], [0, -1, 0], [0, 0, +1], [0, 0, -1]]:
-            if tuple(np.array(drop) - np.array(neighbor)) in droplets:
+        for neighbor in get_neighbors(*drop):
+            if neighbor in droplets:
                 free_sides -= 1
     return free_sides
+
+
+def get_neighbors(x: int, y: int, z: int) -> set:
+    return {(x + 1, y, z), (x - 1, y, z), (x, y + 1, z), (x, y - 1, z), (x, y, z + 1), (x, y, z - 1)}
 
 
 def part_2(input_file: str):
@@ -26,40 +28,35 @@ def part_2(input_file: str):
     droplets = [tuple(map(int, re.findall(r"(\d+)", coords))) for coords in input_data]
 
     # Idea: Find the outside of the sphere
-    Q = deque([(0, 0, 0)])
-    rel_drops = set()
+    Q = deque([(-1, -1, -1)])
     seen = set()
+    touching_surface = 0
     while len(Q) > 0:
         drop = Q.popleft()
-        print(len(Q), len(rel_drops))
         seen.add(drop)
 
-        for neighbor in [[+1, 0, 0], [-1, 0, 0], [0, +1, 0], [0, -1, 0], [0, 0, +1], [0, 0, -1]]:
-            new_pixel = (drop[0] + neighbor[0], drop[1] + neighbor[1], drop[2] + neighbor[2])
-            if new_pixel in droplets:
-                rel_drops.add(drop)
+        for neighbor in get_neighbors(*drop):
             # if outside of field -> skip
-            if any([c < 0 or c > 25 for c in new_pixel]) or new_pixel in seen or new_pixel in droplets:
+            if any([c < -1 or c > 25 for c in neighbor]) or neighbor in seen or neighbor in Q:
                 continue
-            Q.append(new_pixel)
+            # If the neighbor is a droplet -> increase count
+            if neighbor in droplets:
+                touching_surface += 1
+                continue
+            Q.append(neighbor)
 
-    print("Done flooding")
-    print(rel_drops)
-    free_sides = 0
-    for drop in rel_drops:
-        # check neighbors
-        free_sides += 6
-        for neighbor in [[+1, 0, 0], [-1, 0, 0], [0, +1, 0], [0, -1, 0], [0, 0, +1], [0, 0, -1]]:
-            if tuple(np.array(drop) - np.array(neighbor)) in rel_drops:
-                free_sides -= 1
-    return free_sides
+    return touching_surface
 
 
 if __name__ == "__main__":
+
     print("#" * 10 + " Part 1 " + "#" * 10)
     result_ex = part_1("input_ex.txt")
     print(result_ex)
     assert result_ex == 64
+    result_ex = part_1("input_ex_2.txt")
+    print(result_ex)
+    assert result_ex == 108
 
     result = part_1("input.txt")
     print(result)
@@ -70,5 +67,10 @@ if __name__ == "__main__":
     print(result)
     assert result == 58
 
+    result_ex = part_2("input_ex_2.txt")
+    print(result_ex)
+    assert result_ex == 90
+
     result = part_2("input.txt")
+    assert result > 2557
     print(result)
