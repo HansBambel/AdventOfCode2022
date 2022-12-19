@@ -31,6 +31,8 @@ def decide(
     obsidian += robots[2]
     geode += robots[3]
 
+    # print(minutes, ore, clay, obsidian, geode, " robots", robots)
+
     filled_decide = partial(
         decide,
         ore_robot_costs=ore_robot_costs,
@@ -47,9 +49,9 @@ def decide(
         buy_geode_robot = filled_decide(
             minutes=minutes - 1,
             robots=(robots[0], robots[1], robots[2], robots[3] + 1),
-            ore=ore - obsidian_robot_costs[0],
+            ore=ore - geode_robot_costs[0],
             clay=clay,
-            obsidian=obsidian - obsidian_robot_costs[1],
+            obsidian=obsidian - geode_robot_costs[1],
             geode=geode,
         )
     # buy obsidian miner
@@ -64,15 +66,16 @@ def decide(
                 geode=geode,
             )
     # buy clay miner
-    if ore >= clay_robot_costs:
-        buy_clay_robot = filled_decide(
-            minutes=minutes - 1,
-            robots=(robots[0], robots[1] + 1, robots[2], robots[3]),
-            ore=ore - clay_robot_costs,
-            clay=clay,
-            obsidian=obsidian,
-            geode=geode,
-        )
+    if robots[2] < obsidian_robot_costs[1]:
+        if ore >= clay_robot_costs:
+            buy_clay_robot = filled_decide(
+                minutes=minutes - 1,
+                robots=(robots[0], robots[1] + 1, robots[2], robots[3]),
+                ore=ore - clay_robot_costs,
+                clay=clay,
+                obsidian=obsidian,
+                geode=geode,
+            )
     # buy ore miner
     # some heuristics for faster conversion: only add an ore miner if we can use that much or up in a single minute
     if robots[0] < max_ore_costs:
@@ -86,8 +89,8 @@ def decide(
                 geode=geode,
             )
     # only when nothing else can be done do nothing
-    if sum([buy_ore_robot, buy_clay_robot, buy_obsidian_robot, buy_geode_robot]) == 0:
-        nothing = filled_decide(minutes=minutes - 1, robots=robots, ore=ore, clay=clay, obsidian=obsidian, geode=geode)
+    # if sum([buy_ore_robot, buy_clay_robot, buy_obsidian_robot, buy_geode_robot]) == 0:
+    nothing = filled_decide(minutes=minutes - 1, robots=robots, ore=ore, clay=clay, obsidian=obsidian, geode=geode)
 
     most_geodes = max([nothing, buy_ore_robot, buy_clay_robot, buy_obsidian_robot, buy_geode_robot])
     # print([nothing, buy_ore_robot, buy_clay_robot, buy_obsidian_robot, buy_geode_robot])
