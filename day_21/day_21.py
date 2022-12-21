@@ -18,8 +18,6 @@ def get_number(monkey: str) -> int:
             res = num1 * num2
         case "/":
             res = num1 / num2
-        case "=":
-            res = num1 == num2
     return res
 
 
@@ -43,7 +41,7 @@ def get_target():
     try:
         target = get_number(monkeys["root"][0])
         other_name = monkeys["root"][2]
-    except:
+    except TypeError:
         target = get_number(monkeys["root"][2])
         other_name = monkeys["root"][0]
     return target, other_name
@@ -62,22 +60,22 @@ def part_2(input_file: str):
 
     # Instead of iterating one by one -> do a binary search
     # assumption: numbers are monotonically increasing
-    # for that we need to know the other number of root
+    # for that we need to know the other number of the computable child
     target, target_name = get_target()
     low = 0
-    high = 1e25
-    num = 0
-    while low < high:
-        num = (low + high) // 2
-        monkeys["humn"] = num
-        other_num = get_number(target_name)
-        if other_num == target:
-            break
-        elif other_num < target:
+    high = float(1_000_000_000_000)
+    num = (low + high) // 2
+    monkeys["humn"] = num
+    while (other_num := get_number(target_name)) != target:
+        # somehow other_num is negative for big numbers...
+        if other_num < target:
             low = num
         else:
             high = num
-        print(num, other_num, low, high)
+
+        num = (low + high) // 2
+        monkeys["humn"] = num
+        print(num, other_num, target, low, high)
 
     return num
 
