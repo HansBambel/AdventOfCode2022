@@ -58,15 +58,11 @@ def part_1(input_file: str):
 
     for elem in tqdm(linked_list):
 
-        # rest = abs(elem.value) % (len(arr)-1)
-        if elem.value < 0:
-            nums = range(elem.value, 0, 1)
-        else:
-            nums = range(elem.value)
+        rest = abs(elem.value) % (len(linked_list) - 1)
         elem.before.after = elem.after
         elem.after.before = elem.before
         current = elem.before
-        for _ in nums:
+        for _ in range(rest):
             if elem.value < 0:
                 current = current.before
             else:
@@ -95,7 +91,48 @@ def part_1(input_file: str):
 
 def part_2(input_file: str):
     data_file = Path(__file__).with_name(input_file).read_text()
-    input_data = data_file.split("\n")
+    input_data = list(map(int, data_file.split("\n")))
+    linked_list = [Element(val) for val in input_data]
+    for before, after in itertools.pairwise(linked_list):
+        before.after = after
+        after.before = before
+
+    linked_list[0].before = linked_list[-1]
+    linked_list[-1].after = linked_list[0]
+    for elem in linked_list:
+        elem.value *= 811589153
+
+    for _ in range(10):
+        for elem in linked_list:
+            rest = abs(elem.value) % (len(linked_list) - 1)
+            elem.before.after = elem.after
+            elem.after.before = elem.before
+            current = elem.before
+            for _ in range(rest):
+                if elem.value < 0:
+                    current = current.before
+                else:
+                    current = current.after
+
+            # insert the element again
+            elem.before = current
+            elem.after = current.after
+            current.after = elem
+            elem.after.before = elem
+
+    # find the 0
+    elem = linked_list[0]
+    while elem.value != 0:
+        elem = elem.after
+
+    # add 1000th, 2000th, 3000th after 0 together
+    total = 0
+    for i in range(1, 3001):
+        elem = elem.after
+        if i % 1000 == 0:
+            total += elem.value
+
+    return total
 
 
 if __name__ == "__main__":
