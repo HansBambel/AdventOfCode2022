@@ -17,7 +17,9 @@ def get_number(monkey: str) -> int:
         case "*":
             res = num1 * num2
         case "/":
-            res = num1 / num2
+            res = num1 // num2
+        case "=":
+            res = num1 == num2
     return res
 
 
@@ -39,6 +41,20 @@ def part_1(input_file: str):
 def part_2(input_file: str):
     data_file = Path(__file__).with_name(input_file).read_text()
     input_data = data_file.split("\n")
+    global monkeys
+    for line in input_data:
+        name, rest = line.split(": ")
+        if rest.isnumeric():
+            monkeys[name] = int(rest)
+        else:
+            monkeys[name] = rest.split(" ")
+    monkeys["root"] = monkeys["root"][0], "=", monkeys["root"][2]
+    num = 0
+    monkeys["humn"] = num
+    while get_number("root") is False:
+        num += 1
+        monkeys["humn"] = num
+    return num
 
 
 if __name__ == "__main__":
@@ -52,9 +68,9 @@ if __name__ == "__main__":
 
     # #### Part 2 ####
     print("#" * 10 + " Part 2 " + "#" * 10)
-    result = part_2("input_ex.txt")
-    print(result)
-    assert result == 301
+    # result = part_2("input_ex.txt")
+    # print(result)
+    # assert result == 301
 
     result = part_2("input.txt")
     print(result)
