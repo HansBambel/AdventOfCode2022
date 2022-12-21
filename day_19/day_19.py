@@ -55,7 +55,7 @@ def decide(
             geode=geode,
         )
     # buy obsidian miner
-    if robots[3] < geode_robot_costs[1]:
+    if robots[3] < geode_robot_costs[1] and robots[2] * minutes + obsidian < minutes * geode_robot_costs[1]:
         if ore >= obsidian_robot_costs[0] and clay >= obsidian_robot_costs[1]:
             buy_obsidian_robot = filled_decide(
                 minutes=minutes - 1,
@@ -66,7 +66,7 @@ def decide(
                 geode=geode,
             )
     # buy clay miner
-    if robots[2] < obsidian_robot_costs[1]:
+    if robots[2] < obsidian_robot_costs[1] and robots[1] * minutes + clay < minutes * obsidian_robot_costs[1]:
         if ore >= clay_robot_costs:
             buy_clay_robot = filled_decide(
                 minutes=minutes - 1,
@@ -77,8 +77,10 @@ def decide(
                 geode=geode,
             )
     # buy ore miner
-    # some heuristics for faster conversion: only add an ore miner if we can use that much or up in a single minute
-    if robots[0] < max_ore_costs:
+    # some heuristics for faster conversion:
+    # - only add an ore miner if we can use that much or up in a single minute
+    # - if we already have enough ore don't produce more than we can use up
+    if robots[0] < max_ore_costs and robots[0] * minutes + ore < minutes * max_ore_costs:
         if ore >= ore_robot_costs:
             buy_ore_robot = filled_decide(
                 minutes=minutes - 1,
