@@ -5,7 +5,7 @@ monkeys: Dict[str, Any] = {}
 
 
 def get_number(monkey: str) -> int:
-    if isinstance(monkeys[monkey], int):
+    if isinstance(monkeys[monkey], float):
         return monkeys[monkey]
     m1, op, m2 = monkeys[monkey]
     num1, num2 = get_number(m1), get_number(m2)
@@ -17,7 +17,7 @@ def get_number(monkey: str) -> int:
         case "*":
             res = num1 * num2
         case "/":
-            res = num1 // num2
+            res = num1 / num2
         case "=":
             res = num1 == num2
     return res
@@ -30,12 +30,23 @@ def part_1(input_file: str):
     for line in input_data:
         name, rest = line.split(": ")
         if rest.isnumeric():
-            monkeys[name] = int(rest)
+            monkeys[name] = float(rest)
         else:
             monkeys[name] = rest.split(" ")
     # Now it is either a number or list of monkey, operator, monkey
     res = get_number("root")
     return res
+
+
+def get_target():
+    monkeys["humn"] = None
+    try:
+        target = get_number(monkeys["root"][0])
+        other_name = monkeys["root"][2]
+    except:
+        target = get_number(monkeys["root"][2])
+        other_name = monkeys["root"][0]
+    return target, other_name
 
 
 def part_2(input_file: str):
@@ -45,15 +56,29 @@ def part_2(input_file: str):
     for line in input_data:
         name, rest = line.split(": ")
         if rest.isnumeric():
-            monkeys[name] = int(rest)
+            monkeys[name] = float(rest)
         else:
             monkeys[name] = rest.split(" ")
-    monkeys["root"] = monkeys["root"][0], "=", monkeys["root"][2]
+
+    # Instead of iterating one by one -> do a binary search
+    # assumption: numbers are monotonically increasing
+    # for that we need to know the other number of root
+    target, target_name = get_target()
+    low = 0
+    high = 1e25
     num = 0
-    monkeys["humn"] = num
-    while get_number("root") is False:
-        num += 1
+    while low < high:
+        num = (low + high) // 2
         monkeys["humn"] = num
+        other_num = get_number(target_name)
+        if other_num == target:
+            break
+        elif other_num < target:
+            low = num
+        else:
+            high = num
+        print(num, other_num, low, high)
+
     return num
 
 
@@ -68,9 +93,9 @@ if __name__ == "__main__":
 
     # #### Part 2 ####
     print("#" * 10 + " Part 2 " + "#" * 10)
-    # result = part_2("input_ex.txt")
-    # print(result)
-    # assert result == 301
+    result = part_2("input_ex.txt")
+    print(result)
+    assert result == 301
 
     result = part_2("input.txt")
     print(result)
